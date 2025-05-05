@@ -1,0 +1,56 @@
+name: Create localization help issue
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: 'Commit to compare to (last by default)'
+        type: string
+        default: 'HEAD^'
+        required: true
+      template:
+        description: 'Custom YAML template for Markdown (if needed)'
+        type: string
+        default: '/scripts/template.yml'
+        required: true
+      disable-mentions:
+        description: 'Print mentions as string'
+        type: choice
+        options:
+        - 'true'
+        - 'false'
+        default: 'false'
+        required: true
+
+jobs:
+  call-external-python-action:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout your own repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+
+      - name: Run Python Action from external repo
+        id: run_action
+        uses: Knutschbert/create-localization-issue@main  # Or better: use a commit SHA or tag
+        with:
+          base-dir: "assets/locales"
+          base-file: "en.json"
+          branch: ${{ github.ref }}
+          commit: ${{ github.event.inputs.commit }}
+          # maintainers: ""
+          template: ${{ github.event.inputs.template }}
+          disable-mentions: ${{ github.event.inputs.disable-mentions }}
+      # - name: Print outputs
+      #   run: echo "One ${{ steps.run_action.outputs.issue-title }} Two ${{ steps.run_action.outputs.issue-body }}"
+      - name: Create issue
+        uses: dacbd/create-issue-action@main
+        with:
+          token: ${{ github.token }}
+          title: ${{ steps.run_action.outputs.issue-title }}
+          body: ${{ steps.run_action.outputs.issue-body }}
+          labels: |
+            localization, automated, help wanted
