@@ -11,7 +11,7 @@ on:
       template:
         description: 'Custom YAML template for Markdown (if needed)'
         type: string
-        default: '/scripts/template.yml'
+        default: 'scripts/template.yml'
         required: true
       disable-mentions:
         description: 'Print mentions as string'
