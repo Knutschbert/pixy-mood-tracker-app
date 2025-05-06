@@ -21,6 +21,14 @@ on:
         - 'false'
         default: 'false'
         required: true
+      js-patch:
+        description: 'use git diff for JSON templates (for large repos)'
+        required: true
+        type: choice
+        options:
+        - 'True'
+        - 'False'
+        default: 'False'
 
 jobs:
   call-external-python-action:
@@ -44,6 +52,7 @@ jobs:
           # maintainers: ""
           template: ${{ github.event.inputs.template }}
           disable-mentions: ${{ github.event.inputs.disable-mentions }}
+          js-patch: ${{ github.event.inputs.js-patch }}
       # - name: Print outputs
       #   run: echo "One ${{ steps.run_action.outputs.issue-title }} Two ${{ steps.run_action.outputs.issue-body }}"
       - name: Create issue
